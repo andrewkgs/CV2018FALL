@@ -159,10 +159,12 @@ def main():
         for sigma_s in sigma_s_set:
             for sigma_r in sigma_r_set:
                 new_vote = JBF(img, sigma_s, sigma_r).run()
-                print(new_vote)
                 total_vote = [sum(x) for x in zip(total_vote, new_vote)]
+                print('img: {}\nsigma_s: {}, sigma_r: {}\n{}'.format(img_name, sigma_s, sigma_r, new_vote))
+                print('current vote:\n{}')
         print(total_vote)
-        with open('vote_result.txt', 'w') as fo:
+
+        with open('{}_vote_result.txt'.format(img_name[:2]), 'w') as fo:
             for v in total_vote:
                 fo.write('{}\n'.format(v))
 
