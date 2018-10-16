@@ -170,17 +170,17 @@ def main():
                 print('current vote:\n{}'.format(total_vote))
         print('total vote:\n{}'.format(total_vote))
 
-        with open('{}_vote_result.txt'.format(img_name[:2]), 'w') as fo:
-            for v in total_vote:
-                fo.write('{}\n'.format(v))
-
-        top3_id = np.array(total_vote).argsort()[-3:][::-1]
-        print(top3_id)
-
         weight = []
         for i in range(11):
             for j in range(11-i):
                 weight.append([round(i/10)+0, round(j/10)+0, round(1.0-(i/10)-(j/10))])
+
+        with open('{}_vote_result.txt'.format(img_name[:2]), 'w') as fo:
+            for i, v in enumerate(total_vote):
+                fo.write('{} {}\n'.format(weight[i], v))
+
+        top3_id = np.array(total_vote).argsort()[-3:][::-1]
+        print(top3_id)
 
         for i in range(3):
             if not total_vote[top3_id[i]] == 0:
