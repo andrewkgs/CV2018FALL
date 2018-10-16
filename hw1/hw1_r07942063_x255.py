@@ -184,7 +184,7 @@ def main():
 
         for i in range(3):
             if not total_vote[top3_id] == 0:
-                imwrite(os.path.join(args.output_dir, img_name[:2] + '_y' + str(i) + img_name[2:]), adv_rgb2gray(img, weight[top3_id]))
+                imwrite('{}/{}_y{}.png'.format(args.output_dir, img_name[:2] , i), adv_rgb2gray(img, weight[top3_id]))
 
 
 if __name__ == '__main__':
