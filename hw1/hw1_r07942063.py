@@ -7,7 +7,7 @@ from imageio import imread, imwrite
 parser = argparse.ArgumentParser(description='CV hw1')
 parser.add_argument('-d', '--data_dir', default='./testdata/', type=str)
 parser.add_argument('-o', '--output_dir', default='./output/', type=str)
-parser.add_argument('-i', '--image_dir', default='./images/', type=str)
+parser.add_argument('-i', '--image_dir', default='./filtered_images/', type=str)
 args = parser.parse_args()
 
 
@@ -184,7 +184,7 @@ def main():
 
         for i in range(3):
             if not total_vote[top3_id[i]] == 0:
-                imwrite('{}/{}_y{}.png'.format(args.output_dir, img_name[:2] , i), adv_rgb2gray(img, weight[top3_id]))
+                imwrite('{}/{}_y{}.png'.format(args.output_dir, img_name[:2] , i), adv_rgb2gray(img, weight[top3_id[i]]))
 
 
 if __name__ == '__main__':
