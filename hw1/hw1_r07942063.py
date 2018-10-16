@@ -173,7 +173,7 @@ def main():
         weight = []
         for i in range(11):
             for j in range(11-i):
-                weight.append([round(i/10)+0, round(j/10)+0, round(1.0-(i/10)-(j/10))])
+                weight.append([round(i/10, 1)+0, round(j/10, 1)+0, round(1.0-(i/10)-(j/10), 1)])
 
         with open('{}_vote_result.txt'.format(img_name[:2]), 'w') as fo:
             for i, v in enumerate(total_vote):
@@ -184,7 +184,7 @@ def main():
 
         for i in range(3):
             if not total_vote[top3_id[i]] == 0:
-                imwrite('{}/{}_y{}.png'.format(args.output_dir, img_name[:2] , i), adv_rgb2gray(img, weight[top3_id[i]]))
+                imwrite('{}/{}_y{}.png'.format(args.output_dir, img_name[:2] , i+1), adv_rgb2gray(img, weight[top3_id[i]]))
 
 
 if __name__ == '__main__':
