@@ -21,7 +21,7 @@ def con_rgb2gray(img_rgb):
     return ((np.dot(img_rgb[..., :3], [0.299, 0.587, 0.114])) * 255).astype(np.uint8)
 
 
-def adv_rgb2gray(img_rgbi, weight):
+def adv_rgb2gray(img_rgb, weight):
     return ((np.dot(img_rgb[..., :3], weight)) * 255).astype(np.uint8)
 
 
