@@ -2,7 +2,7 @@ import os
 import argparse
 import numpy as np
 from imageio import imread, imwrite
-
+import time
 
 parser = argparse.ArgumentParser(description='CV hw1')
 parser.add_argument('-d', '--data_dir', default='./testdata/', type=str)
@@ -44,7 +44,7 @@ class JBF(object):
 
         self.generate_weight()
         self.generate_guide_img()
-        self.generate_Gr_LUT()
+        # self.generate_Gr_LUT()
         self.Gs()
 
     def rd(self, num):
@@ -63,10 +63,10 @@ class JBF(object):
 
     def generate_Gr_LUT(self):
         for i in range(0, 255):
-            self.Gr_LUT[i] = np.exp(- (i**2) / (2 * (self.sigma_r**2)))         
+            self.Gr_LUT[i] = np.exp(np.negative(np.square(i)) / (2 * np.square(self.sigma_r)))         
 
     def Gs_weight(self, i, j):
-        return np.exp(-1 * (np.sqrt((i-self.r)**2 + (j-self.r)**2)) / (2 * self.sigma_s**2))
+        return np.exp(np.negative(np.sqrt(np.square(i-self.r) + np.square(j-self.r))) / (2 * np.square(self.sigma_s)))
 
     def Gs(self):
         for i in range(self.window_size):
@@ -74,12 +74,13 @@ class JBF(object):
                 self.Gs_window[i, j] = self.Gs_weight(i, j)
 
     def Gr_rgb(self, Tp, Tq):
-        self.Gr_window = np.exp(-1 * ((Tp[0] - Tq[:,:,0])**2) / (2 * (self.sigma_r**2))) * \
-                         np.exp(-1 * ((Tp[1] - Tq[:,:,1])**2) / (2 * (self.sigma_r**2))) * \
-                         np.exp(-1 * ((Tp[2] - Tq[:,:,2])**2) / (2 * (self.sigma_r**2)))
+        denominator = 2 * np.square(self.sigma_r)
+        self.Gr_window = np.exp(np.negative(np.square(Tp[0] - Tq[:,:,0])) / denominator) * \
+                         np.exp(np.negative(np.square(Tp[1] - Tq[:,:,1])) / denominator) * \
+                         np.exp(np.negative(np.square(Tp[2] - Tq[:,:,2])) / denominator)
 
     def Gr_gray(self, Tp, Tq):
-        self.Gr_window = np.exp(-1 * ((Tp-Tq)**2) / (2 * (self.sigma_r**2)))
+        self.Gr_window = np.exp(np.negative(np.square(Tp-Tq)) / (2 * np.square(self.sigma_r)))
 
     def bf(self):
         r = self.r
@@ -118,11 +119,13 @@ class JBF(object):
         cost_dict = {}
 
         for guide_id in range(len(self.guide_img)):
-            print('guide image no.{}  {}'.format(guide_id, self.weight[guide_id]))
+            start = time.time()
             jbf_img = self.jbf(guide_id)
+            end = time.time()
+            print('guide image no.{}\t{}\t Running time: {} sec'.format(guide_id, self.weight[guide_id], end-start))
             imwrite('{}/{}/s{}_r{}/jbf_{}.png'.format(args.image_dir, self.img_name[:2], self.sigma_s, self.sigma_r, guide_id), (jbf_img*255).astype(np.uint8))
             cost = np.sum(np.abs(bf_img-jbf_img))
-            #print('cost: {}'.format(cost))
+            # print('cost: {}'.format(cost))
             cost_dict[tuple(self.weight_10x[guide_id])] = cost
 
         counter = [0] * len(self.weight)
@@ -173,7 +176,7 @@ def main():
         weight = []
         for i in range(11):
             for j in range(11-i):
-                weight.append([round(i/10, 1)+0, round(j/10, 1)+0, round(1.0-(i/10)-(j/10), 1)])
+                weight.append([round(i/10, 1)+0, round(j/10, 1)+0, round(1.0-(i/10)-(j/10), 1)+0])
 
         with open('{}_vote_result.txt'.format(img_name[:2]), 'w') as fo:
             for i, v in enumerate(total_vote):
